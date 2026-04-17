@@ -1,21 +1,43 @@
 import pandas as pd
-
-df = pd.read_csv("Electric_Vehicle_Population_Data.csv")
+import matplotlib.pyplot as plt
+df=pd.read_csv("Electric_Vehicle_Population_Data.csv")
 print(df)
-
-# First 10 rows
-print(df.iloc[0:10])
-
-# Structure
-print(df.columns)
-print(df.dtypes)
-print(df.shape)
-
-# Summary
+print(df.info())
 print(df.describe())
+print(df.head(10))
+print("Column Names:\n", df.columns)
+print("Data Types:\n", df.dtypes)
+print("Shape of Dataset:\n", df.shape)
 
-# Missing values
+# Count missing values in each column
+print("Missing values in each column:\n")
+
 print(df.isnull().sum())
+# Fill missing values for numerical columns (mean)
+df_fillna = df.fillna(df.mean(numeric_only=True))
+# Fill missing values for categorical columns (mode)
+for col in df.select_dtypes(include=['object', 'string']):
+    df[col] = df[col].fillna(df[col].mode()[0])
+print("After replacing missing values:\n")
+print(df.isnull().sum())
+#Create new column (Range Category) 
+def categorize_range(x):
+    if x < 50:
+        return "Low"
+    elif x < 150:
+        return "Medium"
+    else:
+        return "High"
 
-# Fill missing values
-df = df.fillna(df.mean(numeric_only=True))
+df['Range Category'] = df['Electric Range'].apply(categorize_range)
+
+# Count each category
+category_count = df['Range Category'].value_counts()
+print("\nRange Categories:\n", category_count)
+
+# Bar chart
+category_count.plot(kind='bar')
+plt.title("Electric Range Categories")
+plt.xlabel("Category")
+plt.ylabel("Count")
+plt.show()
