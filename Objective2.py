@@ -10,6 +10,7 @@ state_total = df.groupby('State')['VIN (1-10)'].count()
 print("\nEV count per State:\n", state_total)
 # Vehicle type distribution 
 type_total = df.groupby('Electric Vehicle Type')['VIN (1-10)'].count()
+type_total.index = ['BEV', 'PHEV']
 print("\nEV by Vehicle Type:\n", type_total)
 
 #Visualization 
@@ -25,17 +26,18 @@ plt.show()
 # Horizontal bar chart (Top 10 States)
 state_top = state_total.sort_values(ascending=False).head(10)
 plt.figure()
-state_top.plot(kind='barh')   
+state_top.plot(kind='barh')
+plt.xscale('log')   
 plt.title("Top 10 States EV Population")
 plt.xlabel("EV Count")
 plt.ylabel("State")
+plt.gca().invert_yaxis()
 plt.show()
 
-# Bar chart (Vehicle Type)
+# pie chart (Vehicle Type)
 plt.figure()
-type_total.plot(kind='bar')
+type_total.plot.pie(autopct='%1.1f%%',startangle=90,labeldistance=1.1,textprops={'fontsize': 10})
+
 plt.title("Vehicle Type Distribution")
-plt.xlabel("Vehicle Type")
-plt.ylabel("EV Count")
-plt.xticks(rotation=5)
+plt.tight_layout()
 plt.show()
