@@ -1,23 +1,23 @@
 import pandas as pd
 from scipy import stats
 
-df = pd.read_csv("Electric_Vehicle_Population_Data.csv")
+df = pd.read_csv("cleaned_ev_data.csv")
 
-
-# Significance level
 alpha = 0.05
 
-# Two-sample independent t-test (EV dataset)
+# Select two groups (CA vs WA)
 state1 = df[df['State'] == 'CA']['Electric Range'].dropna()
 state2 = df[df['State'] == 'WA']['Electric Range'].dropna()
-
-t_stat, p_value = stats.ttest_ind(state1, state2, equal_var=True)
-
-print("Two-sample t-test (Independent samples, equal variance):")
+# Perform Independent T-test (Welch)
+t_stat, p_value = stats.ttest_ind(state1, state2, equal_var=False)
+print("T-test Results")
 print(f"T-statistic = {t_stat:.4f}")
-print(f"P-value = {p_value:.4f}")
-
-if p_value < alpha:
-    print("Conclusion: Reject the null hypothesis. There is a significant difference between the group means.")
+if p_value < 0.001:
+    print("P-value < 0.001")
 else:
-    print("Conclusion: Fail to reject the null hypothesis. No significant difference between the group means.")
+    print(f"P-value = {p_value:.4f}")
+# Interpretation
+if p_value < alpha:
+    print("Conclusion: Reject H0 → Significant difference between the two states.")
+else:
+    print("Conclusion: Fail to reject H0 → No significant difference between the two states.")
