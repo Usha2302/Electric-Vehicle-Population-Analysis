@@ -1,23 +1,19 @@
-import pandas as pd
 from scipy import stats
+import pandas as pd
 
 df = pd.read_csv("cleaned_ev_data.csv")
 
-alpha = 0.05
+df = df[df['Electric Range'] > 50]
 
-# Select two groups (CA vs WA)
-state1 = df[df['State'] == 'CA']['Electric Range'].dropna()
-state2 = df[df['State'] == 'WA']['Electric Range'].dropna()
-# Perform Independent T-test (Welch)
-t_stat, p_value = stats.ttest_ind(state1, state2, equal_var=False)
-print("T-test Results")
-print(f"T-statistic = {t_stat:.4f}")
-if p_value < 0.001:
-    print("P-value < 0.001")
+old = df[df['Model Year'] <= 2020]['Electric Range']
+new = df[df['Model Year'] > 2020]['Electric Range']
+
+t_stat, p_value = stats.ttest_ind(old, new, equal_var=False)
+
+print("T-statistic:", round(t_stat, 4))
+print("P-value:", round(p_value, 4))
+
+if p_value < 0.05:
+    print("Significant difference exists")
 else:
-    print(f"P-value = {p_value:.4f}")
-# Interpretation
-if p_value < alpha:
-    print("Conclusion: Reject H0 → Significant difference between the two states.")
-else:
-    print("Conclusion: Fail to reject H0 → No significant difference between the two states.")
+    print("No significant difference")
